@@ -2,7 +2,9 @@ package com.example.trabalho4;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Timestamp;
 import java.util.List;
+import java.util.Random;
 
 public class Utils {
     public static String toClassName(String name) {
@@ -144,28 +146,13 @@ public class Utils {
             writer.println("            // Exemplo de inserção");
             writer.println("            " + toClassName(tableName) + " novoObj = new " + toClassName(tableName) + "();");
             for (Column column : columns) {
-                String type = column.getJavaType().toLowerCase();
-                String randomValue = "";
-                switch (type) {
-                    case "int":
-                        randomValue = String.valueOf(randomInt());
-                        break;
-                    case "float":
-                        randomValue = String.valueOf(randomFloat());
-                        break;
-                    case "string":
-                        randomValue = String.valueOf(randomString());
-                        break;
-                    case "date":
-                        randomValue = String.valueOf(randomDate());
-                        break;
-                    default:
-                        //tipos desconhecidos
-                        break;
-                }
-                writer.println("            // novoObj.set" + toClassName(column.getName()) + "(valor); // Atribua valores aqui");
+                String columnName = column.getName();
+                String javaType = column.getJavaType();
+                writer.print("            ");
+
+                String javataType = randomObject();
             }
-            writer.println("            // dao.insert(novoObj);");
+            writer.println("            dao.insert(novoObj);");
 
             // Exemplo de remoção
             writer.println();
@@ -182,23 +169,54 @@ public class Utils {
             e.printStackTrace();
         }
     }
-    
-    public static int randomInt(){
 
+    public static int randomInt(){
+        return new Random().nextInt();
     }
 
     public static float randomFloat(){
-
+        return new Random().nextFloat();
     }
 
-    public static int randomString(){
-
+    public static long randomLong(){
+        return new Random().nextLong();
     }
 
-    public static int randomDate(){
-
+    public static String randomString(){
+        int length = 10; // Tamanho da string
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            int index = new Random().nextInt(characters.length());
+            sb.append(characters.charAt(index));
+        }
+        return sb.toString();
     }
+
+    public static java.util.Date randomDate() {
+        long offset = Timestamp.valueOf("2020-01-01 00:00:00").getTime(); // Timestamp de início (1 de janeiro de 2020)
+        long end = Timestamp.valueOf("2023-12-31 23:59:59").getTime(); // Timestamp de fim (31 de dezembro de 2023)
+        long diff = end - offset + 1;
+        return new java.util.Date(offset + (long)(Math.random() * diff)); // Retorna uma data aleatória dentro do intervalo especificado
+    }
+
+    public static Object randomObject() {
+            Random random = new Random();
+            int choice = random.nextInt(4); // Gera um número aleatório entre 0 e 3
+
+            switch (choice) {
+                case 0:
+                    return randomInt();
+                case 1:
+                    return randomFloat();
+                case 2:
+                    return randomString();
+                case 3:
+                    return randomDate();
+                default:
+                    return null; // Caso inesperado
+            }
+        }
 }
-
 
 //int, float, string, data
