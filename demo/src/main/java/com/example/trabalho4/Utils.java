@@ -150,7 +150,7 @@ public class Utils {
                 String javaType = column.getJavaType();
                 writer.print("            ");
 
-                String javataType = randomObject();
+                Object javataType = randomObject();
             }
             writer.println("            dao.insert(novoObj);");
 
@@ -218,5 +218,5 @@ public class Utils {
             }
         }
 }
-
+//
 //int, float, string, data
