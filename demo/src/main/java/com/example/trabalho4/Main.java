@@ -2,12 +2,10 @@ package com.example.trabalho4;
 
 import java.sql.*;
 import java.util.*;
-import java.io.*;
-
 
 public class Main {
     public static void main(String[] args) {
-        String url = "jdbc:postgresql://localhost:5432/trabalhoFinal";
+        String url = "jdbc:postgresql://localhost:5432/meta_dados";
         String user = "postgres";
         String password = "lucas";
 
@@ -35,10 +33,10 @@ public class Main {
         return columns;
     }
 
-    private static void generateClasses(String tableName, List<Column> columns) {
-        generateEntityClass(tableName, columns);
-        generateDaoClass(tableName, columns);
-        generateExampleClass(tableName, columns);
+    public static void generateClasses(String tableName, List<Column> columns) {
+        Utils.generateEntityClass(tableName, columns);
+        Utils.generateDaoClass(tableName, columns);
+        Utils.generateExampleClass(tableName, columns);
     }
 }
 
