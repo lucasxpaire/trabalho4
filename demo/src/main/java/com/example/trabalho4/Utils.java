@@ -144,6 +144,25 @@ public class Utils {
             writer.println("            // Exemplo de inserção");
             writer.println("            " + toClassName(tableName) + " novoObj = new " + toClassName(tableName) + "();");
             for (Column column : columns) {
+                String type = column.getJavaType().toLowerCase();
+                String randomValue = "";
+                switch (type) {
+                    case "int":
+                        randomValue = String.valueOf(randomInt());
+                        break;
+                    case "float":
+                        randomValue = String.valueOf(randomFloat());
+                        break;
+                    case "string":
+                        randomValue = String.valueOf(randomString());
+                        break;
+                    case "date":
+                        randomValue = String.valueOf(randomDate());
+                        break;
+                    default:
+                        //tipos desconhecidos
+                        break;
+                }
                 writer.println("            // novoObj.set" + toClassName(column.getName()) + "(valor); // Atribua valores aqui");
             }
             writer.println("            // dao.insert(novoObj);");
@@ -164,4 +183,22 @@ public class Utils {
         }
     }
     
+    public static int randomInt(){
+
+    }
+
+    public static float randomFloat(){
+
+    }
+
+    public static int randomString(){
+
+    }
+
+    public static int randomDate(){
+
+    }
 }
+
+
+//int, float, string, data
