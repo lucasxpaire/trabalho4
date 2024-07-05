@@ -121,7 +121,6 @@ public class Utils {
         }
     }
     
-
     public static void generateExampleClass(String tableName, List<Column> columns) {
         String className = toClassName(tableName) + "Exemplo";
         try (PrintWriter writer = new PrintWriter(className + ".java")) {
@@ -141,7 +140,7 @@ public class Utils {
             writer.println("                System.out.println(obj);");
             writer.println("            }");
             writer.println();
-
+    
             // Exemplo de inserção
             writer.println("            // Exemplo de inserção");
             writer.println("            " + toClassName(tableName) + " novoObj = new " + toClassName(tableName) + "();");
@@ -149,17 +148,39 @@ public class Utils {
                 String columnName = column.getName();
                 String javaType = column.getJavaType();
                 writer.print("            ");
-
-                Object javataType = randomObject();
+                switch (javaType) {
+                    case "integer":
+                        writer.println("novoObj.set" + toClassName(column.getName()) + "(" + randomInt() + ");");
+                        break;
+                    case "long":
+                        writer.println("novoObj.set" + toClassName(column.getName()) + "(" + randomLong() + "L);");
+                        break;
+                    case "float":
+                        writer.println("novoObj.set" + toClassName(column.getName()) + "(" + randomFloat() + "f);");
+                        break;
+                    case "double":
+                        writer.println("novoObj.set" + toClassName(column.getName()) + "(" + randomFloat() + "d);");
+                        break;
+                    case "String":
+                        writer.println("novoObj.set" + toClassName(column.getName()) + "(\"" + randomString() + "\");");
+                        break;
+                    case "java.util.Date":
+                        writer.println("novoObj.set" + toClassName(column.getName()) + "(new java.util.Date(" + randomDate().getTime() + "L));");
+                        break;
+                    default:
+                        // Se o tipo não estiver entre os esperados, não gerar valor aleatório
+                        writer.println("// Tipo não suportado: " + javaType);
+                        break;
+                }
             }
             writer.println("            dao.insert(novoObj);");
-
+    
             // Exemplo de remoção
             writer.println();
             writer.println("            // Exemplo de remoção");
             writer.println("            // " + toClassName(tableName) + " objParaRemover = list.get(0); // Exemplo de objeto a ser removido");
             writer.println("            // dao.delete(objParaRemover);");
-
+    
             writer.println("        } catch (SQLException e) {");
             writer.println("            e.printStackTrace();");
             writer.println("        }");
@@ -169,6 +190,7 @@ public class Utils {
             e.printStackTrace();
         }
     }
+    
 
     public static int randomInt(){
         return new Random().nextInt();
