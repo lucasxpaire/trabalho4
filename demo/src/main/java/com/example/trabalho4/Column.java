@@ -1,8 +1,8 @@
 package com.example.trabalho4;
 
 public class Column {
-    private final String name;
-    private final String type;
+    private String name;
+    private String type;
 
     public Column(String name, String type) {
         this.name = name;
@@ -17,13 +17,15 @@ public class Column {
         return type;
     }
 
+    // Ajuste no método getJavaType() na classe Column
+
     public String getJavaType() {
         switch (type.toLowerCase()) {
             case "int":
             case "integer":
-                return "int";
             case "bigint":
-                return "long";
+            case "smallint":
+                return "int";
             case "real":
                 return "float";
             case "double precision":
@@ -33,27 +35,28 @@ public class Column {
             case "text":
                 return "String";
             case "date":
+                return "java.sql.Date";
             case "timestamp":
-                return "java.util.Date";
+                return "java.sql.Timestamp";
             default:
                 return "Object";
         }
     }
+    
+    
+    
 
     public static String toPreparedStatementMethod(String javaType) {
         switch (javaType) {
-            case "String":
-                return "String";
             case "int":
                 return "Int";
-            case "long":
-                return "Long";
             case "float":
                 return "Float";
             case "double":
                 return "Double";
-            case "java.util.Date":
-                return "Timestamp";
+            case "String":
+                return "String";
+            // Adicione outros tipos conforme necessário
             default:
                 return "Object";
         }
@@ -61,18 +64,15 @@ public class Column {
 
     public static String toResultSetMethod(String javaType) {
         switch (javaType) {
-            case "String":
-                return "String";
             case "int":
                 return "Int";
-            case "long":
-                return "Long";
             case "float":
                 return "Float";
             case "double":
                 return "Double";
-            case "java.util.Date":
-                return "Timestamp";
+            case "String":
+                return "String";
+            // Adicione outros tipos conforme necessário
             default:
                 return "Object";
         }
@@ -84,16 +84,11 @@ public class Column {
                 return "VARCHAR";
             case "int":
                 return "INTEGER";
-            case "long":
-                return "BIGINT";
             case "float":
                 return "REAL";
-            case "double":
-                return "DOUBLE PRECISION";
-            case "java.util.Date":
-                return "TIMESTAMP";
             default:
-                return "VARCHAR";
+                return "VARCHAR"; // ou tratar outros tipos conforme necessário
         }
     }
 }
+
