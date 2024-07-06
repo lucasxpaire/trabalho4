@@ -5,6 +5,8 @@ import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
+        String outputDir = "C:/Users/lucas/Desktop/PARADIGMAS/Trabalho4/demo/src/main/java/com/example/trabalho4/generated";
+
         String url = "jdbc:postgresql://localhost:5432/meta_dados";
         String user = "postgres";
         String password = "lucas";
@@ -15,7 +17,7 @@ public class Main {
             while (tables.next()) {
                 String tableName = tables.getString("TABLE_NAME");
                 List<Column> columns = getColumns(metaData, tableName);
-                generateClasses(tableName, columns);
+                generateClasses(outputDir, tableName, columns);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -33,11 +35,16 @@ public class Main {
         return columns;
     }
 
-    public static void generateClasses(String tableName, List<Column> columns) {
-        Utils.generateEntityClass(tableName, columns);
-        Utils.generateDaoClass(tableName, columns);
-        Utils.generateExampleClass(tableName, columns);
+    public static void generateClasses(String outputDir, String tableName, List<Column> columns) {
+        try {
+            Utils.generateEntityClass(outputDir, tableName, columns);
+            Utils.generateDaoClass(outputDir, tableName, columns);
+            Utils.generateExampleClass(outputDir, tableName, columns);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+    
 }
 
 

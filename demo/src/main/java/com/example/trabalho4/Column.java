@@ -29,48 +29,71 @@ public class Column {
             case "double precision":
                 return "double";
             case "varchar":
+            case "character varying":
             case "text":
                 return "String";
+            case "date":
+            case "timestamp":
+                return "java.util.Date";
             default:
                 return "Object";
         }
     }
 
-    public String getResultSetMethod() {
-        switch (type.toLowerCase()) {
-            case "int":
-            case "integer":
-                return "Int";
-            case "bigint":
-                return "Long";
-            case "real":
-                return "Float";
-            case "double precision":
-                return "Double";
-            case "varchar":
-            case "text":
+    public static String toPreparedStatementMethod(String javaType) {
+        switch (javaType) {
+            case "String":
                 return "String";
+            case "int":
+                return "Int";
+            case "long":
+                return "Long";
+            case "float":
+                return "Float";
+            case "double":
+                return "Double";
+            case "java.util.Date":
+                return "Timestamp";
             default:
                 return "Object";
         }
     }
 
-    public String getPreparedStatementMethod() {
-        switch (type.toLowerCase()) {
-            case "int":
-            case "integer":
-                return "Int";
-            case "bigint":
-                return "Long";
-            case "real":
-                return "Float";
-            case "double precision":
-                return "Double";
-            case "varchar":
-            case "text":
+    public static String toResultSetMethod(String javaType) {
+        switch (javaType) {
+            case "String":
                 return "String";
+            case "int":
+                return "Int";
+            case "long":
+                return "Long";
+            case "float":
+                return "Float";
+            case "double":
+                return "Double";
+            case "java.util.Date":
+                return "Timestamp";
             default:
                 return "Object";
+        }
+    }
+
+    public static String toSQLType(String javaType) {
+        switch (javaType) {
+            case "String":
+                return "VARCHAR";
+            case "int":
+                return "INTEGER";
+            case "long":
+                return "BIGINT";
+            case "float":
+                return "REAL";
+            case "double":
+                return "DOUBLE PRECISION";
+            case "java.util.Date":
+                return "TIMESTAMP";
+            default:
+                return "VARCHAR";
         }
     }
 }
