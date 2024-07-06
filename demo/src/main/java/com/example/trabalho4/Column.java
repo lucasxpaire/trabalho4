@@ -21,28 +21,34 @@ public class Column {
         switch (type.toLowerCase()) {
             case "int":
             case "integer":
-            case "bigint":
-            case "smallint":
             case "serial":
-            case "bigserial":
                 return "int";
+            case "bigint":
+            case "bigserial":
+                return "long";
+            case "smallint":
+                return "short";
             case "real":
+            case "float4":
                 return "float";
             case "double precision":
+            case "float8":
                 return "double";
             case "varchar":
             case "character varying":
             case "text":
+            case "char":
+            case "character":
                 return "String";
             case "date":
                 return "java.sql.Date";
             case "timestamp":
+            case "timestamp without time zone":
                 return "java.sql.Timestamp";
             default:
                 return "Object";
         }
     }
-    
 
     public static String toPreparedStatementMethod(String javaType) {
         switch (javaType) {
@@ -54,7 +60,10 @@ public class Column {
                 return "Double";
             case "String":
                 return "String";
-            // Adicione outros tipos conforme necessário
+            case "java.sql.Date":
+                return "Date";
+            case "java.sql.Timestamp":
+                return "Timestamp";
             default:
                 return "Object";
         }
@@ -70,7 +79,10 @@ public class Column {
                 return "Double";
             case "String":
                 return "String";
-            // Adicione outros tipos conforme necessário
+            case "java.sql.Date":
+                return "Date";
+            case "java.sql.Timestamp":
+                return "Timestamp";
             default:
                 return "Object";
         }
@@ -82,10 +94,21 @@ public class Column {
                 return "VARCHAR";
             case "int":
                 return "INTEGER";
+            case "long":
+                return "BIGINT";
+            case "short":
+                return "SMALLINT";
             case "float":
                 return "REAL";
+            case "double":
+                return "DOUBLE PRECISION";
+            case "java.sql.Date":
+                return "DATE";
+            case "java.sql.Timestamp":
+                return "TIMESTAMP";
             default:
                 return "VARCHAR"; // ou tratar outros tipos conforme necessário
         }
     }
+
 }

@@ -28,7 +28,7 @@ public class Utils {
             // Atributos
             for (Column column : columns) {
                 String columnName = column.getName();
-                String javaType = column.getJavaType(); // Usar getJavaType() para determinar o tipo Java
+                String javaType = column.getJavaType();
                 writer.println("    private " + javaType + " " + columnName + ";");
             }
             writer.println();
@@ -36,7 +36,7 @@ public class Utils {
             // Getters e Setters
             for (Column column : columns) {
                 String columnName = column.getName();
-                String javaType = column.getJavaType(); // Usar getJavaType() para determinar o tipo Java
+                String javaType = column.getJavaType();
     
                 // Getter
                 writer.println("    public " + javaType + " get" + toClassName(columnName) + "() {");
@@ -142,7 +142,6 @@ public class Utils {
         }
     }
     
-
     public static void generateExampleClass(String outputDir, String tableName, List<Column> columns) {
         String className = toClassName(tableName) + "Exemplo";
         String filePath = outputDir + File.separator + className + ".java";
@@ -157,7 +156,7 @@ public class Utils {
             writer.println("    public static void main(String[] args) {");
             writer.println("        String url = \"jdbc:postgresql://localhost:5432/meta_dados\";");
             writer.println("        String user = \"postgres\";");
-            writer.println("        String password = \"lucas\";");
+            writer.println("        String password = \"kise\";");
             writer.println();
     
             writer.println("        try (Connection conn = DriverManager.getConnection(url, user, password)) {");
@@ -198,15 +197,16 @@ public class Utils {
             // Método para gerar valores de exemplo
             writer.println("    private static " + columns.get(0).getJavaType() + " generateExampleValue(String type) {");
             writer.println("        switch (type) {");
-            for (Column column : columns) {
-                String javaType = column.getJavaType();
-                writer.println("            case \"" + javaType + "\":");
-                writer.println("                return " + getExampleValue(javaType) + ";");
-            }
-            writer.println("            default:");
-            writer.println("                return null;");
+            writer.println("            case \"int\": return (int) (Math.random() * 100);");
+            writer.println("            case \"float\": return (float) (Math.random() * 100);");
+            writer.println("            case \"double\": return (double) (Math.random() * 100);");
+            writer.println("            case \"String\": return \"exemplo\";");
+            writer.println("            case \"java.sql.Date\": return new java.sql.Date(System.currentTimeMillis());");
+            writer.println("            case \"java.sql.Timestamp\": return new java.sql.Timestamp(System.currentTimeMillis());");
+            writer.println("            default: return null;");
             writer.println("        }");
             writer.println("    }");
+            writer.println();
     
             writer.println("}");
         } catch (IOException e) {
@@ -214,17 +214,16 @@ public class Utils {
         }
     }
     
-
     private static String getExampleValue(String javaType) {
         switch (javaType) {
             case "int":
                 return "123";
             case "float":
-                return "123.45f";
+                return "123.4599999";
             case "double":
-                return "123.45";
+                return "123.453333333";
             case "String":
-                return "\"Exemplo\"";
+                return "\"example\"";
             case "java.sql.Date":
                 return "new java.sql.Date(System.currentTimeMillis())";
             case "java.sql.Timestamp":
@@ -232,30 +231,5 @@ public class Utils {
             default:
                 return null;
         }
-    }
-
-    public static int randomInt(){
-        return new Random().nextInt(100) + 1;
-    }
-
-    public static float randomFloat(){
-        return new Random().nextFloat() * 100;
-    }
-
-    public static String randomString(){
-        int length = 5 + new Random().nextInt(10); // tamanho entre 5 e 14 caracteres
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < length; i++) {
-            char ch = (char) ('a' + new Random().nextInt(26));
-            builder.append(ch);
-        }
-        return builder.toString();
-    }
-
-    public static java.util.Date randomDate(){
-        long offset = Timestamp.valueOf("2020-01-01 00:00:00").getTime();
-        long end = Timestamp.valueOf("2023-01-01 00:00:00").getTime();
-        long diff = end - offset + 1;
-        return new java.util.Date(offset + (long)(Math.random() * diff));
     }
 }
