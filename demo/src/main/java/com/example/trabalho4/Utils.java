@@ -19,12 +19,12 @@ public class Utils {
     public static void generateEntityClass(String outputDir, String tableName, List<Column> columns) {
         String className = toClassName(tableName);
         String filePath = outputDir + File.separator + className + ".java";
-
+    
         try (PrintWriter writer = new PrintWriter(filePath)) {
             writer.println("package com.example.trabalho4.generated;");
             writer.println();
             writer.println("public class " + className + " {");
-
+    
             // Atributos
             for (Column column : columns) {
                 String columnName = column.getName();
@@ -32,43 +32,43 @@ public class Utils {
                 writer.println("    private " + javaType + " " + columnName + ";");
             }
             writer.println();
-
+    
             // Getters e Setters
             for (Column column : columns) {
                 String columnName = column.getName();
                 String javaType = column.getJavaType(); // Usar getJavaType() para determinar o tipo Java
-
+    
                 // Getter
                 writer.println("    public " + javaType + " get" + toClassName(columnName) + "() {");
                 writer.println("        return " + columnName + ";");
                 writer.println("    }");
                 writer.println();
-
+    
                 // Setter
                 writer.println("    public void set" + toClassName(columnName) + "(" + javaType + " " + columnName + ") {");
                 writer.println("        this." + columnName + " = " + columnName + ";");
                 writer.println("    }");
                 writer.println();
             }
-
+    
             writer.println("}");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
+    
     public static void generateDaoClass(String outputDir, String tableName, List<Column> columns) {
         String className = toClassName(tableName) + "Dao";
         String entityClassName = toClassName(tableName);
-
+    
         String filePath = outputDir + File.separator + className + ".java";
-
+    
         try (PrintWriter writer = new PrintWriter(filePath)) {
             writer.println("package com.example.trabalho4.generated;");
             writer.println("import java.sql.*;");
             writer.println("import java.util.*;");
             writer.println();
-
+    
             writer.println("public class " + className + " {");
             writer.println("    private Connection conn;");
             writer.println();
@@ -76,7 +76,7 @@ public class Utils {
             writer.println("        this.conn = conn;");
             writer.println("    }");
             writer.println();
-
+    
             // Método getAll
             writer.println("    public List<" + entityClassName + "> getAll() throws SQLException {");
             writer.println("        List<" + entityClassName + "> list = new ArrayList<>();");
@@ -94,7 +94,7 @@ public class Utils {
             writer.println("        return list;");
             writer.println("    }");
             writer.println();
-
+    
             // Método insert
             writer.println("    public void insert(" + entityClassName + " obj) throws SQLException {");
             writer.print("        String sql = \"INSERT INTO " + tableName + " (");
@@ -117,7 +117,7 @@ public class Utils {
             writer.println("        }");
             writer.println("    }");
             writer.println();
-
+    
             // Método delete
             writer.println("    public void delete(" + entityClassName + " obj) throws SQLException {");
             writer.print("        String sql = \"DELETE FROM " + tableName + " WHERE ");
@@ -135,30 +135,31 @@ public class Utils {
             writer.println("        }");
             writer.println("    }");
             writer.println();
-
+    
             writer.println("}");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+    
 
     public static void generateExampleClass(String outputDir, String tableName, List<Column> columns) {
         String className = toClassName(tableName) + "Exemplo";
         String filePath = outputDir + File.separator + className + ".java";
-
+    
         try (PrintWriter writer = new PrintWriter(filePath)) {
             writer.println("package com.example.trabalho4.generated;");
             writer.println("import java.sql.*;");
             writer.println("import java.util.*;");
             writer.println();
-
+    
             writer.println("public class " + className + " {");
             writer.println("    public static void main(String[] args) {");
             writer.println("        String url = \"jdbc:postgresql://localhost:5432/meta_dados\";");
             writer.println("        String user = \"postgres\";");
             writer.println("        String password = \"lucas\";");
             writer.println();
-
+    
             writer.println("        try (Connection conn = DriverManager.getConnection(url, user, password)) {");
             writer.println("            " + toClassName(tableName) + "Dao dao = new " + toClassName(tableName) + "Dao(conn);");
             writer.println("            List<" + toClassName(tableName) + "> list = dao.getAll();");
@@ -166,7 +167,7 @@ public class Utils {
             writer.println("                System.out.println(obj);");
             writer.println("            }");
             writer.println();
-
+    
             // Exemplo de inserção
             writer.println("            // Exemplo de inserção");
             writer.println("            " + toClassName(tableName) + " novoObj = new " + toClassName(tableName) + "();");
@@ -182,18 +183,18 @@ public class Utils {
             }
             writer.println("            dao.insert(novoObj);");
             writer.println();
-
+    
             // Exemplo de exclusão
             writer.println("            // Exemplo de exclusão");
             writer.println("            dao.delete(novoObj);");
             writer.println();
-
+    
             writer.println("        } catch (SQLException e) {");
             writer.println("            e.printStackTrace();");
             writer.println("        }");
             writer.println("    }");
             writer.println();
-
+    
             // Método para gerar valores de exemplo
             writer.println("    private static " + columns.get(0).getJavaType() + " generateExampleValue(String type) {");
             writer.println("        switch (type) {");
@@ -206,12 +207,13 @@ public class Utils {
             writer.println("                return null;");
             writer.println("        }");
             writer.println("    }");
-
+    
             writer.println("}");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+    
 
     private static String getExampleValue(String javaType) {
         switch (javaType) {

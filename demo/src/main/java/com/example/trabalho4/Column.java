@@ -17,14 +17,14 @@ public class Column {
         return type;
     }
 
-    // Ajuste no método getJavaType() na classe Column
-
     public String getJavaType() {
         switch (type.toLowerCase()) {
             case "int":
             case "integer":
             case "bigint":
             case "smallint":
+            case "serial":
+            case "bigserial":
                 return "int";
             case "real":
                 return "float";
@@ -42,8 +42,6 @@ public class Column {
                 return "Object";
         }
     }
-    
-    
     
 
     public static String toPreparedStatementMethod(String javaType) {
@@ -91,4 +89,3 @@ public class Column {
         }
     }
 }
-
