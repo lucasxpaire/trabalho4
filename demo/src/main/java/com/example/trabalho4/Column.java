@@ -22,7 +22,7 @@ public class Column {
             case "int":
             case "integer":
             case "serial":
-                return "int";
+                return "Integer";
             case "bigint":
             case "bigserial":
                 return "long";
@@ -30,10 +30,10 @@ public class Column {
                 return "short";
             case "real":
             case "float4":
-                return "float";
+                return "Float";
             case "double precision":
             case "float8":
-                return "double";
+                return "Double";
             case "varchar":
             case "character varying":
             case "text":
