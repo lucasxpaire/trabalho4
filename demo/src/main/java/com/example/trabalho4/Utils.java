@@ -3,10 +3,11 @@ package com.example.trabalho4;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.*;
+
 import java.util.*;
 
 public class Utils {
+
     public static String toClassName(String name) {
         String[] parts = name.split("_");
         StringBuilder className = new StringBuilder();
@@ -19,12 +20,12 @@ public class Utils {
     public static void generateEntityClass(String outputDir, String tableName, List<Column> columns) {
         String className = toClassName(tableName);
         String filePath = outputDir + File.separator + className + ".java";
-    
+
         try (PrintWriter writer = new PrintWriter(filePath)) {
             writer.println("package com.example.trabalho4.generated;");
             writer.println();
             writer.println("public class " + className + " {");
-    
+
             // Atributos
             for (Column column : columns) {
                 String columnName = column.getName();
@@ -32,43 +33,44 @@ public class Utils {
                 writer.println("    private " + javaType + " " + columnName + ";");
             }
             writer.println();
-    
+
             // Getters e Setters
             for (Column column : columns) {
                 String columnName = column.getName();
                 String javaType = column.getJavaType();
-    
+
                 // Getter
                 writer.println("    public " + javaType + " get" + toClassName(columnName) + "() {");
                 writer.println("        return " + columnName + ";");
                 writer.println("    }");
                 writer.println();
-    
+
                 // Setter
-                writer.println("    public void set" + toClassName(columnName) + "(" + javaType + " " + columnName + ") {");
+                writer.println(
+                        "    public void set" + toClassName(columnName) + "(" + javaType + " " + columnName + ") {");
                 writer.println("        this." + columnName + " = " + columnName + ";");
                 writer.println("    }");
                 writer.println();
             }
-    
+
             writer.println("}");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    
+
     public static void generateDaoClass(String outputDir, String tableName, List<Column> columns) {
         String className = toClassName(tableName) + "Dao";
         String entityClassName = toClassName(tableName);
-    
+
         String filePath = outputDir + File.separator + className + ".java";
-    
+
         try (PrintWriter writer = new PrintWriter(filePath)) {
             writer.println("package com.example.trabalho4.generated;");
             writer.println("import java.sql.*;");
             writer.println("import java.util.*;");
             writer.println();
-    
+
             writer.println("public class " + className + " {");
             writer.println("    private Connection conn;");
             writer.println();
@@ -76,160 +78,235 @@ public class Utils {
             writer.println("        this.conn = conn;");
             writer.println("    }");
             writer.println();
-    
+
             // Método getAll
             writer.println("    public List<" + entityClassName + "> getAll() throws SQLException {");
             writer.println("        List<" + entityClassName + "> list = new ArrayList<>();");
             writer.println("        Statement stmt = conn.createStatement();");
-            writer.println("        ResultSet rs = stmt.executeQuery(\"SELECT * FROM " + tableName + "\");");
+            writer.println("        ResultSet rs = stmt.executeQuery(\"SELECT * FROM \\\"" + tableName + "\\\" \");");
             writer.println("        while (rs.next()) {");
             writer.println("            " + entityClassName + " obj = new " + entityClassName + "();");
             for (Column column : columns) {
                 String columnName = column.getName();
                 String javaType = column.getJavaType();
-                writer.println("            obj.set" + toClassName(columnName) + "(rs.get" + Column.toResultSetMethod(javaType) + "(\"" + columnName + "\"));");
+                writer.println("            obj.set" + toClassName(columnName) + "(rs.get"
+                        + Column.toResultSetMethod(javaType) + "(\"" + columnName + "\"));");
             }
             writer.println("            list.add(obj);");
             writer.println("        }");
             writer.println("        return list;");
             writer.println("    }");
             writer.println();
-    
+
             // Método insert
             writer.println("    public void insert(" + entityClassName + " obj) throws SQLException {");
-            writer.print("        String sql = \"INSERT INTO " + tableName + " (");
+            writer.print("        String sql = \"INSERT INTO \\\"" + tableName + "\\\" (");
             for (int i = 0; i < columns.size(); i++) {
                 writer.print(columns.get(i).getName());
-                if (i < columns.size() - 1) writer.print(", ");
-                else writer.print(") VALUES (");
+                if (i < columns.size() - 1)
+                    writer.print(", ");
+                else
+                    writer.print(") VALUES (");
             }
             for (int i = 0; i < columns.size(); i++) {
                 writer.print("?");
-                if (i < columns.size() - 1) writer.print(", ");
-                else writer.println(")\";");
+                if (i < columns.size() - 1)
+                    writer.print(", ");
+                else
+                    writer.println(")\";");
             }
             writer.println("        try (PreparedStatement stmt = conn.prepareStatement(sql)) {");
             for (int i = 0; i < columns.size(); i++) {
                 String columnType = columns.get(i).getJavaType();
-                writer.println("            stmt.set" + Column.toPreparedStatementMethod(columnType) + "(" + (i+1) + ", obj.get" + toClassName(columns.get(i).getName()) + "());");
+                writer.println("            stmt.set" + Column.toPreparedStatementMethod(columnType) + "(" + (i + 1)
+                        + ", obj.get" + toClassName(columns.get(i).getName()) + "());");
             }
             writer.println("            stmt.executeUpdate();");
             writer.println("        }");
             writer.println("    }");
             writer.println();
-    
+
             // Método delete
             writer.println("    public void delete(" + entityClassName + " obj) throws SQLException {");
-            writer.print("        String sql = \"DELETE FROM " + tableName + " WHERE ");
+            writer.print("        String sql = \"DELETE FROM \\\"" + tableName + "\\\" WHERE ");
             for (int i = 0; i < columns.size(); i++) {
                 writer.print(columns.get(i).getName() + " = ?");
-                if (i < columns.size() - 1) writer.print(" AND ");
-                else writer.println("\";");
+                if (i < columns.size() - 1)
+                    writer.print(" AND ");
+                else
+                    writer.println("\";");
             }
             writer.println("        try (PreparedStatement stmt = conn.prepareStatement(sql)) {");
             for (int i = 0; i < columns.size(); i++) {
                 String columnType = columns.get(i).getJavaType();
-                writer.println("            stmt.set" + Column.toPreparedStatementMethod(columnType) + "(" + (i+1) + ", obj.get" + toClassName(columns.get(i).getName()) + "());");
+                writer.println("            stmt.set" + Column.toPreparedStatementMethod(columnType) + "(" + (i + 1)
+                        + ", obj.get" + toClassName(columns.get(i).getName()) + "());");
             }
             writer.println("            stmt.executeUpdate();");
             writer.println("        }");
             writer.println("    }");
             writer.println();
-    
+
             writer.println("}");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    
+
     public static void generateExampleClass(String outputDir, String tableName, List<Column> columns) {
         String className = toClassName(tableName) + "Exemplo";
         String filePath = outputDir + File.separator + className + ".java";
-    
+
         try (PrintWriter writer = new PrintWriter(filePath)) {
             writer.println("package com.example.trabalho4.generated;");
             writer.println("import java.sql.*;");
+            writer.println("import java.sql.Date;");
             writer.println("import java.util.*;");
             writer.println();
-    
+            writer.println("");
+
             writer.println("public class " + className + " {");
+            writer.println("        private static final Random RANDOM = new Random();");
+            writer.println();
             writer.println("    public static void main(String[] args) {");
+
             writer.println("        String url = \"jdbc:postgresql://localhost:5432/meta_dados\";");
             writer.println("        String user = \"postgres\";");
             writer.println("        String password = \"kise\";");
             writer.println();
-    
-            writer.println("        try (Connection conn = DriverManager.getConnection(url, user, password)) {");
-            writer.println("            " + toClassName(tableName) + "Dao dao = new " + toClassName(tableName) + "Dao(conn);");
-            writer.println("            List<" + toClassName(tableName) + "> list = dao.getAll();");
-            writer.println("            for (" + toClassName(tableName) + " obj : list) {");
-            writer.println("                System.out.println(obj);");
-            writer.println("            }");
-            writer.println();
-    
+
+            writer.println("        try (Connection connection = DriverManager.getConnection(url, user, password)) {");
+            writer.println("            " + toClassName(tableName) + "Dao dao = new " + toClassName(tableName)
+                    + "Dao(connection);");
+
             // Exemplo de inserção
-            writer.println("            // Exemplo de inserção");
-            writer.println("            " + toClassName(tableName) + " novoObj = new " + toClassName(tableName) + "();");
+            writer.println("            // Exemplo de insercao");
+            writer.println(
+                    "            " + toClassName(tableName) + " novoObj = new " + toClassName(tableName) + "();");
             for (Column column : columns) {
                 String columnName = column.getName();
                 String javaType = column.getJavaType();
                 String exampleValue = getExampleValue(javaType);
-                if (exampleValue == null) {
-                    // Gerar valor aleatório para tipos que não têm exemplo direto
-                    exampleValue = "generateExampleValue(\"" + javaType + "\")";
-                }
+
                 writer.println("            novoObj.set" + toClassName(columnName) + "(" + exampleValue + ");");
             }
             writer.println("            dao.insert(novoObj);");
             writer.println();
-    
+
+            // Exemplo de listagem
+            writer.println("            // Exemplo de listagem");
+            writer.println("            List<" + toClassName(tableName) + "> list = dao.getAll();");
+            writer.println("            for (" + toClassName(tableName) + " obj : list) {");
+            for (Column column : columns) {
+                writer.println("                System.out.print(obj.get" + toClassName(column.getName()) + "() + \" | \");");
+            }
+            writer.println("                System.out.println();");
+            writer.println("            }");
+            writer.println();
+
             // Exemplo de exclusão
-            writer.println("            // Exemplo de exclusão");
+            writer.println("            // Exemplo de exclusao");
+            writer.println("            // Comentar para adicionar varios dados no banco");
             writer.println("            dao.delete(novoObj);");
             writer.println();
-    
+
             writer.println("        } catch (SQLException e) {");
             writer.println("            e.printStackTrace();");
             writer.println("        }");
             writer.println("    }");
             writer.println();
-    
-            // Método para gerar valores de exemplo
-            writer.println("    private static " + columns.get(0).getJavaType() + " generateExampleValue(String type) {");
-            writer.println("        switch (type) {");
-            writer.println("            case \"int\": return (int) (Math.random() * 100);");
-            writer.println("            case \"float\": return (float) (Math.random() * 100);");
-            writer.println("            case \"double\": return (double) (Math.random() * 100);");
-            writer.println("            case \"String\": return \"exemplo\";");
-            writer.println("            case \"java.sql.Date\": return new java.sql.Date(System.currentTimeMillis());");
-            writer.println("            case \"java.sql.Timestamp\": return new java.sql.Timestamp(System.currentTimeMillis());");
-            writer.println("            default: return null;");
+
+            writer.println("    private static String getRandomString() {");
+            writer.println("        int length = RANDOM.nextInt(10) + 1;");
+            writer.println("        StringBuilder sb = new StringBuilder(length);");
+            writer.println("        for (int i = 0; i < length; i++) {");
+            writer.println("            char c = (char) (RANDOM.nextInt(26) + 'a');");
+            writer.println("            sb.append(c);");
             writer.println("        }");
+            writer.println("        return sb.toString();");
             writer.println("    }");
             writer.println();
-    
+
+            // Exemplo para getRandomDecimal
+            writer.println("    private static String getRandomDecimal() {");
+            writer.println(
+                    "        return String.format(\"%.2f\", RANDOM.nextDouble() * 10000);");
+            writer.println("    }");
+            writer.println();
+
+            // Exemplo para getRandomDate
+            writer.println("    private static String getRandomDate() {");
+            writer.println("        int year = RANDOM.nextInt(100) + 1900;");
+            writer.println("        int month = RANDOM.nextInt(12) + 1;");
+            writer.println("        int day = RANDOM.nextInt(28) + 1;");
+            writer.println(
+                    "        return String.format(\"%04d-%02d-%02d\", year, month, day); // Data no formato YYYY-MM-DD");
+            writer.println("    }");
+            writer.println();
+
+            // Exemplo para getRandomTime
+            writer.println("    private static String getRandomTime() {");
+            writer.println("        int hour = RANDOM.nextInt(24); ");
+            writer.println("        int minute = RANDOM.nextInt(60);");
+            writer.println("        int second = RANDOM.nextInt(60);");
+            writer.println(
+                    "        return String.format(\"%02d:%02d:%02d\", hour, minute, second); // Tempo no formato HH:MM:SS");
+            writer.println("    }");
+            writer.println();
+
+            // Exemplo para getRandomTimestamp
+            writer.println("    private static String getRandomTimestamp() {");
+            writer.println(
+                    "        return getRandomDate() + \" \" + getRandomTime(); // Timestamp como combinação de data e hora");
+            writer.println("    }");
+            writer.println();
+
+            // Exemplo para getRandomByteArray
+            writer.println("    private static byte[] getRandomByteArray() {");
+            writer.println(
+                    "        byte[] bytes = new byte[RANDOM.nextInt(10) + 1];");
+            writer.println("        RANDOM.nextBytes(bytes);");
+            writer.println("        return bytes;");
+            writer.println("    }");
+            writer.println();
+
             writer.println("}");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    
+
     private static String getExampleValue(String javaType) {
-        switch (javaType) {
-            case "int":
-                return "123";
-            case "float":
-                return "123.4599999";
-            case "double":
-                return "123.453333333";
-            case "String":
-                return "\"example\"";
-            case "java.sql.Date":
-                return "new java.sql.Date(System.currentTimeMillis())";
-            case "java.sql.Timestamp":
-                return "new java.sql.Timestamp(System.currentTimeMillis())";
+        switch (javaType.toUpperCase()) {
+            case "STRING":
+                return "getRandomString()";
+            case "INT":
+                return "RANDOM.nextInt(10000)";
+            case "LONG":
+                return "RANDOM.nextLong()";
+            case "SHORT":
+                return "(short) RANDOM.nextInt(Short.MAX_VALUE)";
+            case "BYTE":
+                return "(byte) RANDOM.nextInt(Byte.MAX_VALUE)";
+            case "FLOAT":
+                return "RANDOM.nextFloat() * 100";
+            case "DOUBLE":
+                return "RANDOM.nextDouble() * 100";
+            case "JAVA.MATH.BIGDECIMAL":
+                return "new BigDecimal(getRandomDecimal())";
+            case "BOOL":
+                return "RANDOM.nextBoolean()";
+            case "JAVA.SQL.DATE":
+                return "Date.valueOf(getRandomDate())";
+            case "JAVA.SQL.TIME":
+                return "Time.valueOf(getRandomTime())";
+            case "JAVA.SQL.TIMESTAMP":
+                return "Timestamp.valueOf(getRandomTimestamp())";
+            case "BYTE[]":
+                return "getRandomByteArray()";
             default:
-                return null;
+                return "example";
         }
     }
+
 }

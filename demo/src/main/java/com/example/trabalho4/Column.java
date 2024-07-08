@@ -8,7 +8,6 @@ public class Column {
         this.name = name;
         this.type = type;
     }
-
     public String getName() {
         return name;
     }
@@ -18,35 +17,44 @@ public class Column {
     }
 
     public String getJavaType() {
-        switch (type.toLowerCase()) {
-            case "int":
-            case "integer":
-            case "serial":
-                return "Integer";
-            case "bigint":
-            case "bigserial":
-                return "long";
-            case "smallint":
-                return "short";
-            case "real":
-            case "float4":
-                return "Float";
-            case "double precision":
-            case "float8":
-                return "Double";
-            case "varchar":
-            case "character varying":
-            case "text":
-            case "char":
-            case "character":
+        switch (type.toUpperCase()) {
+            case "VARCHAR":
+            case "CHAR":
+            case "TEXT":
+            case "BPCHAR": // PostgreSQL específico para CHAR
                 return "String";
-            case "date":
+            case "INTEGER":
+            case "INT4":
+            case "SERIAL": // PostgreSQL específico para INTEGER
+                return "int";
+            case "BIGINT":
+            case "INT8": // PostgreSQL específico para BIGINT
+                return "long";
+            case "SMALLINT":
+            case "INT2": // PostgreSQL específico para SMALLINT
+                return "short";
+            case "TINYINT":
+                return "byte"; // PostgreSQL não tem TINYINT, mas é incluído para casos gerais
+            case "FLOAT4":
+                return "float"; // PostgreSQL específico para FLOAT
+            case "FLOAT8":
+                return "double"; // PostgreSQL específico para DOUBLE
+            case "NUMERIC":
+            case "DECIMAL":
+                return "java.math.BigDecimal"; // BigDecimal para precisão com números decimais
+            case "BOOLEAN":
+                return "boolean";
+            case "DATE":
                 return "java.sql.Date";
-            case "timestamp":
-            case "timestamp without time zone":
+            case "TIME":
+                return "java.sql.Time";
+            case "TIMESTAMP":
+            case "TIMESTAMPTZ": // PostgreSQL específico para TIMESTAMP com fuso horário
                 return "java.sql.Timestamp";
+            case "BYTEA": // PostgreSQL específico para arrays de bytes
+                return "byte[]";
             default:
-                return "Object";
+                return "Object"; // Para tipos não mapeados, retornamos Object como fallback
         }
     }
 
