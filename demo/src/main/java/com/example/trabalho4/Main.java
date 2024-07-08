@@ -6,11 +6,13 @@ import java.io.File;
 
 public class Main {
     public static void main(String[] args) {
-        String outputDir = "C:/Users/leand/OneDrive/Área de Trabalho/trabalho4/trabalho4/demo/src/main/java/com/example/trabalho4/generated";
+        //String outputDir = "C:/Users/leand/OneDrive/Área de Trabalho/trabalho4/trabalho4/demo/src/main/java/com/example/trabalho4/generated";
+        String outputDir = "C:/Users/lucas/Desktop/Trabalho4/demo/src/main/java/com/example/trabalho4/generated";
 
         String url = "jdbc:postgresql://localhost:5432/meta_dados";
         String user = "postgres";
-        String password = "kise";
+        String password = "lucas";
+        //String password = "kise";
 
         try (Connection conn = DriverManager.getConnection(url, user, password)) {
             DatabaseMetaData metaData = conn.getMetaData();
